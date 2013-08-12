@@ -108,7 +108,7 @@ function goTo (obj1, obj2){
 }
 
 function getPath (obj1, obj2){
-{
+//{
 		//reset the search values
 		for (i = 0; i < map.length; i++){
 			map[i].parent = null;
@@ -144,26 +144,16 @@ function getPath (obj1, obj2){
 					for (j = 0; j < openList.length; j++){
 						if (neighbours[i] === openList[j]){
 							listCheck2 = true;
-							//check if the g is better now
-							var dx = neighbours[i].x - current.x;
-							var dy = neighbours[i].y - current.y;
-							if (Math.sqrt(dx*dx + dy*dy) < neighbours[i]){
+							//check if the g is better now g TODO: SET G TO COMPLETE PATH TO START, NOT JUST TO CURRENT
+							var dx = neighbours[i].xCenter - current.xCenter;
+							var dy = neighbours[i].yCenter - current.yCenter;
+							var tempG = Math.sqrt(dx*dx + dy*dy) + current.g;
+							if (tempG < neighbours[i].g){
 								neighbours[i].parent = current;
+								neighbours[i].g = tempG;
 							}
 						}
 					}
-					//check if they're already in the open list
-					/*for (j = 0; j < openList.length; j++){
-						if (neighbours[i] === openList[j]){
-							listCheck2 = true;
-							//check if the g is better now
-							var dx = openList[i].x - current.x;
-							var dy = openList[i].y - current.y;				
-							if (Math.sqrt(dx*dx + dy*dy) < openList[j].g){
-								openList[i].parent = current;
-							}
-						}
-					}*/
 					if (listCheck1 === false && listCheck2 === false){
 						//set the current square as the parent of these squares
 						neighbours[i].parent = current;
@@ -181,18 +171,26 @@ function getPath (obj1, obj2){
 			}
 			// calculate g, h and f for every item in the open list
 			for (i = 0; i < openList.length; i++){
-				if (openList[i].g <= 0){
-					//get g
-					var dx = openList[i].x - current.x;
-					var dy = openList[i].y - current.y;				
-					openList[i].g = Math.sqrt(dx*dx + dy*dy);
+				//if (openList[i].g <= 0){
+					//get g TODO: SET G TO COMPLETE PATH TO START, NOT JUST TO CURRENT
+					var dx = openList[i].xCenter - current.xCenter;
+					var dy = openList[i].yCenter - current.yCenter;				
+					openList[i].g = Math.sqrt(dx*dx + dy*dy) + openList[i].parent.g;
+					
+					
+					/*var curr = openList[i];
+					if (curr.parent != null) {
+						openList[i] += curr.parent.g;
+					}*/
+					
+					
 					//get h
-					dx = obj2.x - openList[i].x;
-					dy = obj2.y - openList[i].y;
+					dx = obj2.xCenter - openList[i].xCenter;
+					dy = obj2.yCenter - openList[i].yCenter;
 					openList[i].h = Math.sqrt(dx*dx + dy*dy);
 					//get f
 					openList[i].f = openList[i].g + openList[i].h;
-				}
+				//}
 			}
 			//pick the square with the lowest f score, make it the new current, drop it from the open list and add to the closed list. Repeat
 			var tmp;
@@ -209,9 +207,11 @@ function getPath (obj1, obj2){
 				//TODO check target tile
 				if (closedList[i] === obj2){
 					searching = false;
+					//console.log("I FOUND DA TARGET MADDDAFAKKAS");
 					var curr = current;
 					var path = [];
 					while (curr.parent) {
+						//console.log("adding a node to path");
 						obj1.path.unshift(curr);
 						curr = curr.parent;
 					}
@@ -228,13 +228,12 @@ function getPath (obj1, obj2){
 		for (i=  0; i < obj1.path.length; i++){
 			obj1.path[i].color = obj1.color;
 		}
-		
 		for (i = 0; i < openList.length; i++){
-			/*ctx.fillText("f:" + Math.round(openList[i].f), openList[i].x, openList[i].y+blockSize-1);
+			ctx.fillText("f:" + Math.round(openList[i].f), openList[i].x, openList[i].y+blockSize-1);
 			ctx.fillText("g:" + Math.round(openList[i].g), openList[i].x, openList[i].y+blockSize-11);
 			ctx.fillText("h:" + Math.round(openList[i].h), openList[i].x, openList[i].y+blockSize-21);
-			openList[i].color = "rgba(255,255,255,1)";
-			//current.color = "rgba (0,0,0,1)";*/
+			//openList[i].color = "rgba(255,255,255,1)";
+			//current.color = "rgba (0,0,0,1)";
 		}
 		for (i = 0; i < closedList.length; i++){
 			ctx.fillText("f:" + Math.round(closedList[i].f), closedList[i].x, closedList[i].y+blockSize-1);
@@ -243,5 +242,5 @@ function getPath (obj1, obj2){
 			//closedList[i].color = "rgba(255,255,255,1)";
 			//current.color = "rgba (0,0,0,1)";
 		}
-	}
+	//}
 }
