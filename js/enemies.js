@@ -82,9 +82,9 @@ function createEnemy(xIn, yIn, type){
 	}
 }
 
-createEnemy(500,10, "red");	
+//createEnemy(500,10, "red");	
 //createEnemy(40,200,"blue");
-//createEnemy(100,310,"yellow");
+createEnemy(100,310,"yellow");
 	
 function drawEnemies(){
 	for ( var i = 0; i < enemies.length; i++ ) {

@@ -55,7 +55,9 @@ map[393].color = "rgba(100,100,100,1)";
 map[392].color = "rgba(100,100,100,1)";
 map[425].color = "rgba(100,100,100,1)";
 map[426].color = "rgba(100,100,100,1)";
+map[343].color = "rgba(100,100,100,1)";
 
+map[343].passability = 0;
 map[360].passability = 0;
 map[361].passability = 0;
 map[362].passability = 0;
