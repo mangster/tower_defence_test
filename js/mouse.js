@@ -6,6 +6,18 @@ var offset = {
     y: rect.top
 };
 
+/*
+// zoom functionality
+window.onmousewheel = function(e) {
+	//TODO handle firefox
+	if (e.wheelDelta > 0){
+		blockSize *= 1.1;
+	}
+	else{
+		blockSize *= 0.9;
+	}
+}
+*/
 window.onmousedown = function(e) {
     // IE
     e = e || window.event;
@@ -13,10 +25,15 @@ window.onmousedown = function(e) {
     // get event location
 	
 	var location = {
-        x: e.pageX - offset.x,
-        y: e.pageY - offset.y
+        x: e.pageX + camera.x,
+        y: e.pageY - offset.y + camera.y
     };
-	if (location.x >= 0 && location.x <= canvas.width && location.y >= 0 && location.y <= canvas.height){
+	console.log("clicked x = " + location.x);
+	console.log("clicked y = " + location.y);
+	var tile = screenToTile(location.x,location.y)
+	console.log("clicked tile = " + tile);
+	console.log("tile center: " + tileToScreen(tile).x + " " + tileToScreen(tile).y);
+	/*if (location.x >= 0 && location.x <= canvas.width && location.y >= 0 && location.y <= canvas.height){
 		for (i = 0; i < map.length; i++){
 			map[i].selected = false;
 			if (map[i].highlighted){
@@ -27,23 +44,28 @@ window.onmousedown = function(e) {
 			}
 		}
 		//createTower(location);
-	}
+	}*/
 };
 
 window.onmousemove = function( e ) {
 	// IE
     e = e || window.event;
 	var location = {
-        x: e.pageX - offset.x,
-        y: e.pageY - offset.y
+        x: e.pageX + camera.x,
+        y: e.pageY - offset.y + camera.y
     };
-	if (location.x >= 0 && location.x <= canvas.width && location.y >= 0 && location.y <= canvas.height){
-		for (i = 0; i < map.length; i++){
-			map[i].highlighted = false;
-			if (location.x >= map[i].x && location.x < map[i].x + blockSize && location.y >= map[i].y && location.y < map[i].y + blockSize){		
-				map[i].highlighted = true;
-			}
+	
+	for (var i = 0; i < map.nodes.length; i++){
+		for (var j = 0; j < map.nodes[i].length; j++){
+			map.nodes[i][j].highlighted = false;
 		}
-		//createTower(location);
 	}
+	tile = screenToTile(location.x, location.y);
+	if (tile != null){		
+		tile.highlighted = true;
+	}
+	//TODO lägg till koll att markören är inom canvasen
+	//TODO bortkommenterad markering av ruta, medans jag jobbar med isometrin
+	
+	
 };

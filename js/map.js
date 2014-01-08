@@ -1,125 +1,66 @@
-//create terrain
-var map = [];
+//Skapa random karta
+var map = generateRandom(mapWidth/blockSize, mapHeight/blockSize, 0.1);
 
-//create map
-for (var i = 0; i < canvas.width; i += blockSize ) {
-	for (var j = 0; j < canvas.height; j += blockSize) {
-		map.push({
-			x: i,
-			y: j,
-			xCenter: i + (blockSize/2),
-			yCenter: j + (blockSize/2),
-			radius: blockSize,
-			passability: 1,
-			color: "rgba(0, 255, 0, 1)",
-			borderColor: "rgba(0, 200, 0, 1)",
-			selectedColor: "rgba(0, 100, 0, 1)",
-			highlightedColor: "rgba(255, 255, 0, 1)",
-			selected: false,
-			highlighted: false,
-			update: function() {
-				this.x += this.vx / FPS;
-				this.y += this.vy / FPS;
-			}
-		});
+var nodes = [];
+var row = [];
+
+for (var i = 0; i < 3; i++){
+	row = [];
+	for (var j = 0; j < 4; j++){
+		row.push(1);
 	}
+	nodes.push(row);
 }
 
-
-map[360].color = "rgba(100,100,100,1)";
-map[361].color = "rgba(100,100,100,1)";
-map[362].color = "rgba(100,100,100,1)";
-map[363].color = "rgba(100,100,100,1)";
-map[364].color = "rgba(100,100,100,1)";
-map[365].color = "rgba(100,100,100,1)";
-map[366].color = "rgba(100,100,100,1)";
-map[367].color = "rgba(100,100,100,1)";
-map[368].color = "rgba(100,100,100,1)";
-map[369].color = "rgba(100,100,100,1)";
-map[377].color = "rgba(100,100,100,1)";
-map[394].color = "rgba(100,100,100,1)";
-map[411].color = "rgba(100,100,100,1)";
-map[428].color = "rgba(100,100,100,1)";
-map[445].color = "rgba(100,100,100,1)";
-map[462].color = "rgba(100,100,100,1)";
-map[370].color = "rgba(100,100,100,1)";
-map[387].color = "rgba(100,100,100,1)";
-map[404].color = "rgba(100,100,100,1)";
-map[421].color = "rgba(100,100,100,1)";
-map[438].color = "rgba(100,100,100,1)";
-map[472].color = "rgba(100,100,100,1)";
-map[455].color = "rgba(100,100,100,1)";
-map[357].color = "rgba(100,100,100,1)";
-map[358].color = "rgba(100,100,100,1)";
-map[393].color = "rgba(100,100,100,1)";
-map[392].color = "rgba(100,100,100,1)";
-map[425].color = "rgba(100,100,100,1)";
-map[426].color = "rgba(100,100,100,1)";
-map[343].color = "rgba(100,100,100,1)";
-
-map[343].passability = 0;
-map[360].passability = 0;
-map[361].passability = 0;
-map[362].passability = 0;
-map[363].passability = 0;
-map[364].passability = 0;
-map[365].passability = 0;
-map[366].passability = 0;
-map[367].passability = 0;
-map[368].passability = 0;
-map[369].passability = 0;
-map[377].passability = 0;
-map[394].passability = 0;
-map[411].passability = 0;
-map[428].passability = 0;
-map[445].passability = 0;
-map[462].passability = 0;
-map[370].passability = 0;
-map[387].passability = 0;
-map[404].passability = 0;
-map[421].passability = 0;
-map[438].passability = 0;
-map[472].passability = 0;
-map[455].passability = 0;
-map[357].passability = 0;
-map[358].passability = 0;
-map[393].passability = 0;
-map[392].passability = 0;
-map[425].passability = 0;
-map[426].passability = 0;
-
 function updateMap(){
-	for ( var i = 0; i < map.length; i++ ) {
-    }
+	/*for ( var i = 0; i < map.length; i++ ) {
+    }*/
 }
 
 function drawMap(){
-	for ( var i = 0; i < map.length; i++ ) {
-        var p = map[i];
-		if (p.highlighted && p.selected){
-			ctx.fillStyle = p.highlightedColor;
-			ctx.fillRect (p.x, p.y, blockSize, blockSize);
-			ctx.fillStyle = p.selectedColor;
-			ctx.fillRect (p.x+2, p.y+2, blockSize-4, blockSize-4);
+	ctx.canvas.width = window.innerWidth;
+	ctx.canvas.height = window.innerHeight;
+	
+	
+	//TODO lägg till en koll om blocket syns på canvasen, rita inte ut om ej
+	for (var i = 0; i < map.nodes.length; i++){
+		for (var j = map.nodes[i].length-1; j >= 0; j--){
+			var tile = map.nodes[i][j];
+			drawTile(tile);
 		}
-		else if (p.selected){
-			ctx.fillStyle = p.borderColor;
-			ctx.fillRect (p.x, p.y, blockSize, blockSize);
-			ctx.fillStyle = p.selectedColor;
-			ctx.fillRect (p.x+1, p.y+1, blockSize-2, blockSize-2);
-		}
-		else if (p.highlighted){
-			ctx.fillStyle = p.highlightedColor;
-			ctx.fillRect (p.x, p.y, blockSize, blockSize);
-			ctx.fillStyle = p.color;
-			ctx.fillRect (p.x+2, p.y+2, blockSize-4, blockSize-4);
+	}
+	ctx.fillStyle = "rgba(255, 255, 0, 1)";
+	ctx.fillRect ((50 + canvas.width/2)-camera.x, (50 + canvas.height/2)-camera.y, blockSize, blockSize);
+	
+	// TODO vanliga utritningen bortkommenterad medan jag jobbar med isometrin
+	/*
+	for (var i = 0; i < map.nodes.length; i++){
+		
+		for (var j = 0; j < map.nodes[i].length; j++){
+			p = map.nodes[i][j];
+
 			
+			// Om blocket syns på kameran så rita ut det
+			if (inView(p.x*blockSize, p.y*blockSize)){
+				if (p.highlighted){
+					ctx.fillStyle = "rgba(255, 255, 0, 1)";
+					ctx.fillRect ((p.x*blockSize)-camera.x, (p.y*blockSize)-camera.y, blockSize, blockSize);
+					ctx.fillStyle = "rgba(0, 255, 0, 1)";
+					ctx.fillRect ((p.x*blockSize)+2-camera.x, (p.y*blockSize)+2-camera.y, blockSize-4, blockSize-4);
+				}
+				else if (p.type === 1){
+					ctx.fillStyle = "rgba(0, 200, 0, 1)";
+					ctx.fillRect ((p.x*blockSize)-camera.x, (p.y*blockSize)-camera.y, blockSize, blockSize);
+					ctx.fillStyle = "rgba(0, 255, 0, 1)";
+					ctx.fillRect ((p.x*blockSize)+1-camera.x, (p.y*blockSize)+1-camera.y, blockSize-2, blockSize-2);
+				}
+				else{
+					ctx.fillStyle = "rgba(0, 200, 0, 1)";
+					ctx.fillRect ((p.x*blockSize)-camera.x, (p.y*blockSize)-camera.y, blockSize, blockSize);
+					ctx.fillStyle = "rgba(100, 100, 100, 1)";
+					ctx.fillRect ((p.x*blockSize)+1-camera.x, (p.y*blockSize)+1-camera.y, blockSize-2, blockSize-2);
+				}
+			}
 		}
-		else {
-			ctx.fillStyle = p.borderColor;
-			ctx.fillRect (p.x, p.y, blockSize, blockSize);
-			ctx.fillStyle = p.color;
-			ctx.fillRect (p.x+1, p.y+1, blockSize-2, blockSize-2);
-		}
-    }
+	}*/
 }

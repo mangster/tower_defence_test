@@ -3,16 +3,16 @@ window.onkeydown = function(e){
     var code = e.keyCode;
     if ( code === 37 ) {
     // Left key
-    hero.vx = -200;
+	camera.vx = -camera.speed;
     } else if ( code === 38 ) {
     // Up key
-    hero.vy = -200;
+	camera.vy = -camera.speed;
     } else if ( code === 39 ) {
     // Right key
-    hero.vx = 200;
+	camera.vx = camera.speed;
     } else if ( code === 40 ) {
     // Down key
-    hero.vy = 200;
+	camera.vy = camera.speed;
     }
 };
 
@@ -21,15 +21,15 @@ window.onkeyup = function(e){
     var code = e.keyCode;
     if ( code === 37 ) {
     // Left key
-    hero.vx = 0;
+	camera.vx = 0;
     } else if ( code === 38 ) {
     // Up key
-    hero.vy = 0;
+	camera.vy = 0;
     } else if ( code === 39 ) {
     // Right key
-    hero.vx = 0;
+	camera.vx = 0;
     } else if ( code === 40 ) {
     // Down key
-    hero.vy = 0;
+	camera.vy = 0;
     }
 };
