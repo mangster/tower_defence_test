@@ -19,7 +19,7 @@ var enemies = [];
 }*/
 
 function createEnemy (pos, type){
-	var radius = 15;
+	var radius = 4;
 	var circle = new SAT.Circle(new SAT.Vector(pos.x,pos.y), radius);
 	circle.vx = 0;
 	circle.vy = 0;
@@ -96,7 +96,7 @@ function createEnemy (pos, type){
 	}
 }
 */
-createEnemy(mapTwoD[0][0].pos, "red");	
+createEnemy(mapTwoD[2][2].pos, "red");	
 //createEnemy([map.nodes[1][1].x, map.nodes[1][1].y], "blue");
 //createEnemy(100,310,"yellow");
 	
@@ -104,7 +104,7 @@ function drawEnemies(){
 	if (isometric){
 		for ( var i = 0; i < enemies.length; i++ ) {
 			var p = enemies[i];			
-			drawEnemy(p);
+			drawIsoEnemy(p);
 		}
 	}
 	else{

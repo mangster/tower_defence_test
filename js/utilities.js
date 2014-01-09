@@ -239,11 +239,11 @@ function getEnemyBoundaries(xIn, yIn) {
 
 function drawEnemy (enemy) {
 	ctx.beginPath();
-	
+	var radius = enemy.r * blockSize/2;
 	ctx.lineWidth=1;
 	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
 	ctx.fillStyle = "rgba(255, 0, 0, 1)";
-	ctx.arc(enemy.pos.x - camera.x,enemy.pos.y - camera.y,enemy.r,0,2*Math.PI);
+	ctx.arc(enemy.pos.x - camera.x,enemy.pos.y - camera.y,radius,0,2*Math.PI);
 
 	ctx.stroke();
 	ctx.fill();
@@ -257,15 +257,15 @@ function mapToTwoD(Cell, offset) {
 
 	//var xCart = (posX - posZ)
 	//var yCart = (posX + posZ) / 2;
-
-	var rX = -posX;
+	
+	//ändra tillbaka till -posX om något blivit galet
+	var rX = +posX;
 	var rY = +posZ;
 
 	return { "x": Math.floor(rX), "y": Math.floor(rY) };
 }
 
 function getTwoDTileBoundaries(theCellX, theCellY) {
-
 	//bottom right
 	var aOffset = { "offsetX": (cellWidth * -1) / 2, "offsetY": (cellHeight * -1) / 2 };
 	var aCell = { "x": theCellX, "y": theCellY };
@@ -286,8 +286,12 @@ function getTwoDTileBoundaries(theCellX, theCellY) {
 	aOffset = { "offsetX": (cellWidth * -1) / 2, "offsetY": (cellHeight) / 2 };
 	//var p4 = getScreenCoords(aCell, aOffset);
 	var p4 = mapToTwoD(aCell, aOffset);
+	
+	//center
+	aOffset = { "offsetX": 0, "offsetY": 0 };
+	var center = mapToTwoD(aCell, aOffset);
 
-	return { "point1": p1, "point2": p2, "point3": p3, "point4": p4 };
+	return { "point1": p1, "point2": p2, "point3": p3, "point4": p4, "center": center };
 }
 function drawTwoDTile (tile) {
 	ctx.beginPath();
@@ -323,13 +327,14 @@ function drawTwoDTile (tile) {
 function twoDToIso(point) {
 	var posX = point.x
 	var posZ = point.y
-	//Det är nog här hela kartan blir spegelvänd när jag går från 2d till iso. Fixa om det visar sig vara ett problem
 	var xCart = (posX - posZ)
 	var yCart = (posX + posZ) / 2;
 
 	//var rX = -xCart + canvas.width/2;
 	//var rY = +yCart + canvas.height/2;
-	var rX = -xCart;
+	
+	//gör om till -xCart om något blivit galet
+	var rX = xCart;
 	var rY = +yCart;
 
 	return { "x": Math.floor(rX), "y": Math.floor(rY) };
@@ -366,6 +371,41 @@ function drawIsoTile (tile) {
 	ctx.lineTo(isoTile.points[3].x - camera.x, isoTile.points[3].y - camera.y);
 	ctx.lineTo(isoTile.points[0].x - camera.x, isoTile.points[0].y - camera.y);
 
+	ctx.stroke();
+	ctx.fill();
+	ctx.closePath();
+}
+
+function drawIsoEnemy (enemy) {
+	var isoPos = twoDToIso(enemy.pos); 
+	ctx.beginPath();
+	
+	/*
+	ctx.lineWidth=1;
+	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
+	ctx.fillStyle = "rgba(255, 0, 0, 1)";
+	ctx.arc(isoPos.x - camera.x,isoPos.y - camera.y,enemy.r,0,2*Math.PI);
+
+	ctx.stroke();
+	ctx.fill();
+	ctx.closePath();
+	*/
+	var height = (enemy.r * blockSize/2) * Math.sqrt(0.5);
+	var width = (enemy.r * blockSize/2) * Math.sqrt(1.5);
+	ctx.beginPath();
+	for (var i = 0 * Math.PI; i < 2 * Math.PI; i += 0.01 ) {
+		xPos = isoPos.x - camera.x -  (height * Math.sin(i)) * Math.sin(0 * Math.PI) + (width * Math.cos(i)) * Math.cos(0 * Math.PI);
+		yPos = isoPos.y - camera.y + (width * Math.cos(i)) * Math.sin(0 * Math.PI) + (height * Math.sin(i)) * Math.cos(0 * Math.PI);
+
+		if (i == 0) {
+			ctx.moveTo(xPos, yPos);
+		} else {
+			ctx.lineTo(xPos, yPos);
+		}
+	}
+	ctx.lineWidth=1;
+	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
+	ctx.fillStyle = "rgba(255, 0, 0, 1)";
 	ctx.stroke();
 	ctx.fill();
 	ctx.closePath();

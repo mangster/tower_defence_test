@@ -11,13 +11,15 @@ for (var i = 0; i < map.nodes.length; i++){
 	for (var j = 0; j < map.nodes[i].length; j++){
 		var tile = map.nodes[i][j];
 		var cellPoints = getTwoDTileBoundaries(tile.x, tile.y);
-		var polygon = new SAT.Polygon(new SAT.Vector(), [
-		  new SAT.Vector(cellPoints.point1.x - camera.x, cellPoints.point1.y - camera.y),
-		  new SAT.Vector(cellPoints.point2.x - camera.x, cellPoints.point2.y - camera.y),
-		  new SAT.Vector(cellPoints.point3.x - camera.x, cellPoints.point3.y - camera.y),
-		  new SAT.Vector(cellPoints.point4.x - camera.x, cellPoints.point4.y - camera.y)
+		var polygon = new SAT.Polygon(new SAT.Vector(cellPoints.center.x, cellPoints.center.y), [
+		  new SAT.Vector(cellPoints.point1.x, cellPoints.point1.y),
+		  new SAT.Vector(cellPoints.point2.x, cellPoints.point2.y),
+		  new SAT.Vector(cellPoints.point3.x, cellPoints.point3.y),
+		  new SAT.Vector(cellPoints.point4.x, cellPoints.point4.y)
 		]);
 		polygon.type = tile.type;
+		//polygon.pos = mapToTwoD(tile.pos, 0);
+		polygon.recalc();
 		row.push(polygon);
 	}
 	mapTwoD.push(row);
