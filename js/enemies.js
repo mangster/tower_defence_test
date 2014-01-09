@@ -26,7 +26,7 @@ function createEnemy(pos, type){
 				vx: 0,
 				vy: 0,
 				path: [],
-				target: map.nodes[20][20],
+				target: mapTwoD[2][2],
 				radius: 15,
 				speed: 2,
 				health: 50,
@@ -41,7 +41,7 @@ function createEnemy(pos, type){
 				vx: 0,
 				vy: 0,
 				path: [],
-				target: map.nodes[20][20],
+				target: mapTwoD[2][2],
 				radius: 15,
 				speed: 2,
 				health: 50,
@@ -56,7 +56,7 @@ function createEnemy(pos, type){
 				vx: 0,
 				vy: 0,
 				path: [],
-				target: map.nodes[20][20],
+				target: mapTwoD[2][2],
 				radius: 15,
 				speed: 3,
 				health: 50,
@@ -71,7 +71,7 @@ function createEnemy(pos, type){
 				vx: 0,
 				vy: 0,
 				path: [],
-				target: map.nodes[20][20],
+				target: mapTwoD[2][2],
 				radius: 15,
 				speed: 1,
 				health: 50,
@@ -81,7 +81,7 @@ function createEnemy(pos, type){
 			break;
 	}
 }
-createEnemy(tileToScreen(map.nodes[0][0]), "red");	
+createEnemy(tileToScreen(mapTwoD[0][0].pos), "red");	
 //createEnemy([map.nodes[1][1].x, map.nodes[1][1].y], "blue");
 //createEnemy(100,310,"yellow");
 	
@@ -94,6 +94,7 @@ function drawEnemies(){
 		
 		
 		//draw healthbar
+		/*
 		if (p.health < p.totalHealth){
 			ctx.fillStyle = "rgba(0, 255, 0, 1)";
 			ctx.fillRect (p.x-camera.x-blockSize/2, p.y-camera.y-25, blockSize, 7);
@@ -102,7 +103,7 @@ function drawEnemies(){
 			//area that is not damaged
 			ctx.fillStyle = "rgba(0, 200, 0, 1)"
 			ctx.fillRect (p.x+1-camera.x-blockSize/2, p.y-camera.y+1-25, (blockSize-2)*(p.health/p.totalHealth), 7-2); 
-		}
+		}*/
     }
 }
 

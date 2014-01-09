@@ -14,6 +14,15 @@ window.onkeydown = function(e){
     // Down key
 	camera.vy = camera.speed;
     }
+	else if ( code === 73 ) {
+		// "I" key
+		if (isometric){
+			isometric = false;
+		}
+		else{
+			isometric = true;
+		}
+    }
 };
 
 window.onkeyup = function(e){
@@ -32,4 +41,6 @@ window.onkeyup = function(e){
     // Down key
 	camera.vy = 0;
     }
+	
+
 };

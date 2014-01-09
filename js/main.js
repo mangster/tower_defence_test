@@ -9,8 +9,10 @@ var FPS = 30;
 var blockSize = 30;
 var cellWidth = blockSize;
 var cellHeight = blockSize;
-var mapWidth = 4000;
-var mapHeight = 4000;
+var mapWidth = 1000;
+var mapHeight = 1000;
+var isometric = false;
+var counter = 0;
 
 test = new Image();
 test.src= "img/test.png";

@@ -1,15 +1,26 @@
 //Skapa random karta
 var map = generateRandom(mapWidth/blockSize, mapHeight/blockSize, 0.1);
+var mapTwoD = [];
 
 var nodes = [];
 var row = [];
 
-for (var i = 0; i < 3; i++){
+//create 2d-representation of the map
+for (var i = 0; i < map.nodes.length; i++){
 	row = [];
-	for (var j = 0; j < 4; j++){
-		row.push(1);
+	for (var j = 0; j < map.nodes[i].length; j++){
+		var tile = map.nodes[i][j];
+		var cellPoints = getTwoDTileBoundaries(tile.x, tile.y);
+		var polygon = new SAT.Polygon(new SAT.Vector(), [
+		  new SAT.Vector(cellPoints.point1.x - camera.x, cellPoints.point1.y - camera.y),
+		  new SAT.Vector(cellPoints.point2.x - camera.x, cellPoints.point2.y - camera.y),
+		  new SAT.Vector(cellPoints.point3.x - camera.x, cellPoints.point3.y - camera.y),
+		  new SAT.Vector(cellPoints.point4.x - camera.x, cellPoints.point4.y - camera.y)
+		]);
+		polygon.type = tile.type;
+		row.push(polygon);
 	}
-	nodes.push(row);
+	mapTwoD.push(row);
 }
 
 function updateMap(){
@@ -21,46 +32,27 @@ function drawMap(){
 	ctx.canvas.width = window.innerWidth;
 	ctx.canvas.height = window.innerHeight;
 	
-	
 	//TODO lägg till en koll om blocket syns på canvasen, rita inte ut om ej
-	for (var i = 0; i < map.nodes.length; i++){
-		for (var j = map.nodes[i].length-1; j >= 0; j--){
-			var tile = map.nodes[i][j];
-			drawTile(tile);
-		}
-	}
-	ctx.fillStyle = "rgba(255, 255, 0, 1)";
-	ctx.fillRect ((50 + canvas.width/2)-camera.x, (50 + canvas.height/2)-camera.y, blockSize, blockSize);
-	
-	// TODO vanliga utritningen bortkommenterad medan jag jobbar med isometrin
-	/*
-	for (var i = 0; i < map.nodes.length; i++){
-		
-		for (var j = 0; j < map.nodes[i].length; j++){
-			p = map.nodes[i][j];
-
-			
-			// Om blocket syns på kameran så rita ut det
-			if (inView(p.x*blockSize, p.y*blockSize)){
-				if (p.highlighted){
-					ctx.fillStyle = "rgba(255, 255, 0, 1)";
-					ctx.fillRect ((p.x*blockSize)-camera.x, (p.y*blockSize)-camera.y, blockSize, blockSize);
-					ctx.fillStyle = "rgba(0, 255, 0, 1)";
-					ctx.fillRect ((p.x*blockSize)+2-camera.x, (p.y*blockSize)+2-camera.y, blockSize-4, blockSize-4);
-				}
-				else if (p.type === 1){
-					ctx.fillStyle = "rgba(0, 200, 0, 1)";
-					ctx.fillRect ((p.x*blockSize)-camera.x, (p.y*blockSize)-camera.y, blockSize, blockSize);
-					ctx.fillStyle = "rgba(0, 255, 0, 1)";
-					ctx.fillRect ((p.x*blockSize)+1-camera.x, (p.y*blockSize)+1-camera.y, blockSize-2, blockSize-2);
-				}
-				else{
-					ctx.fillStyle = "rgba(0, 200, 0, 1)";
-					ctx.fillRect ((p.x*blockSize)-camera.x, (p.y*blockSize)-camera.y, blockSize, blockSize);
-					ctx.fillStyle = "rgba(100, 100, 100, 1)";
-					ctx.fillRect ((p.x*blockSize)+1-camera.x, (p.y*blockSize)+1-camera.y, blockSize-2, blockSize-2);
-				}
+	if (isometric){
+		for (var i = 0; i < mapTwoD.length; i++){
+			for (var j = mapTwoD[i].length -1; j >= 0; j--){i
+				var tile = mapTwoD[i][j];
+				drawIsoTile(tile);
 			}
 		}
-	}*/
+		/*for (var i = 0; i < map.nodes.length; i++){
+			for (var j = map.nodes[i].length-1; j >= 0; j--){
+				var tile = map.nodes[i][j];
+				drawTile(tile);
+			}
+		}*/
+	}
+	else{
+		for (var i = 0; i < mapTwoD.length; i++){
+			for (var j = 0; j < mapTwoD[i].length; j++){
+				var tile = mapTwoD[i][j];
+				drawTwoDTile(tile);
+			}
+		}
+	}
 }

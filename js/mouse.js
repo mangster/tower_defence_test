@@ -31,8 +31,10 @@ window.onmousedown = function(e) {
 	console.log("clicked x = " + location.x);
 	console.log("clicked y = " + location.y);
 	var tile = screenToTile(location.x,location.y)
-	console.log("clicked tile = " + tile);
-	console.log("tile center: " + tileToScreen(tile).x + " " + tileToScreen(tile).y);
+	//console.log("clicked tile = " + tile);
+	//console.log("tile center: " + tileToScreen(tile).x + " " + tileToScreen(tile).y);
+	
+	
 	/*if (location.x >= 0 && location.x <= canvas.width && location.y >= 0 && location.y <= canvas.height){
 		for (i = 0; i < map.length; i++){
 			map[i].selected = false;

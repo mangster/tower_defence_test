@@ -90,7 +90,6 @@ function goTo (obj1, obj2){
 	}
 }
 
-//  Funktioner för utritning av isometriskt perspektiv
 function screenToTile(xIn, yIn){
 
 	//var xCart = -(xIn - canvas.width/2); 
@@ -261,4 +260,124 @@ function drawEnemy (enemy) {
 	ctx.closePath();
 }
 
+function mapToTwoD(Cell, offset) {
+
+	var posX = Cell.x * cellWidth + offset.offsetX;
+	var posZ = Cell.y * cellHeight - offset.offsetY;
+
+	//var xCart = (posX - posZ)
+	//var yCart = (posX + posZ) / 2;
+
+	var rX = -posX;
+	var rY = +posZ;
+
+	return { "x": Math.floor(rX), "y": Math.floor(rY) };
+}
+
+function getTwoDTileBoundaries(theCellX, theCellY) {
+
+	//bottom right
+	var aOffset = { "offsetX": (cellWidth * -1) / 2, "offsetY": (cellHeight * -1) / 2 };
+	var aCell = { "x": theCellX, "y": theCellY };
+	var p1 = mapToTwoD(aCell, aOffset);
+	
+	//bottom left
+	aOffset = { "offsetX": (cellWidth) / 2, "offsetY": (cellHeight * -1) / 2 };
+	//var p2 = getScreenCoords(aCell, aOffset);
+	var p2 = mapToTwoD(aCell, aOffset);
+	
+
+	//top left
+	aOffset = { "offsetX": (cellWidth) / 2, "offsetY": (cellHeight) / 2 };
+	//var p3 = getScreenCoords(aCell, aOffset);
+	var p3 = mapToTwoD(aCell, aOffset);
+
+	//top right
+	aOffset = { "offsetX": (cellWidth * -1) / 2, "offsetY": (cellHeight) / 2 };
+	//var p4 = getScreenCoords(aCell, aOffset);
+	var p4 = mapToTwoD(aCell, aOffset);
+
+	return { "point1": p1, "point2": p2, "point3": p3, "point4": p4 };
+}
+function drawTwoDTile (tile) {
+	ctx.beginPath();
+	
+	if (tile.highlighted){
+		ctx.strokeStyle = "rgba(255, 255, 0, 1)";
+		ctx.fillStyle = "rgba(200, 200, 0, 1)";
+	}
+	else if (tile.type === 1){
+		ctx.strokeStyle = "rgba(0, 200, 0, 1)";
+		ctx.fillStyle = "rgba(0, 255, 0, 1)";
+	}
+	else if (tile.type === 0){
+		ctx.strokeStyle = "rgba(0, 200, 0, 1)";
+		ctx.fillStyle = "rgba(100, 100, 100, 1)";
+	}
+	else{
+		ctx.strokeStyle = "red";
+		ctx.fillStyle = "red";
+	}
+	ctx.moveTo(tile.points[0].x - camera.x, tile.points[0].y - camera.y);   
+	ctx.lineTo(tile.points[1].x - camera.x, tile.points[1].y - camera.y);   
+	ctx.lineTo(tile.points[2].x - camera.x, tile.points[2].y - camera.y);   
+	ctx.lineTo(tile.points[3].x - camera.x, tile.points[3].y - camera.y);
+	ctx.lineTo(tile.points[0].x - camera.x, tile.points[0].y - camera.y);
+
+	ctx.stroke();
+	ctx.fill();
+	ctx.closePath();
+}
+
+
+function twoDToIso(point) {
+	var posX = point.x
+	var posZ = point.y
+	//DET ÄR HÄR DET BLIR GALET
+	var xCart = (posX - posZ)
+	var yCart = (posX + posZ) / 2;
+
+	//var rX = -xCart + canvas.width/2;
+	//var rY = +yCart + canvas.height/2;
+	var rX = -xCart;
+	var rY = +yCart;
+
+	return { "x": Math.floor(rX), "y": Math.floor(rY) };
+}
+
+function drawIsoTile (tile) {
+	var isoTile = {}
+	isoTile.points = [];
+	isoTile.type = tile.type;
+	
+	for (var i = 0; i < tile.points.length; i++){
+		isoTile.points[i] = twoDToIso(tile.points[i]);
+	}
+	ctx.beginPath();
+	if (isoTile.highlighted){
+		ctx.strokeStyle = "rgba(255, 255, 0, 1)";
+		ctx.fillStyle = "rgba(200, 200, 0, 1)";
+	}
+	else if (isoTile.type === 1){
+		ctx.strokeStyle = "rgba(0, 200, 0, 1)";
+		ctx.fillStyle = "rgba(0, 255, 0, 1)";
+	}
+	else if (isoTile.type === 0){
+		ctx.strokeStyle = "rgba(0, 200, 0, 1)";
+		ctx.fillStyle = "rgba(100, 100, 100, 1)";
+	}
+	else{
+		ctx.strokeStyle = "red";
+		ctx.fillStyle = "red";
+	}
+	ctx.moveTo(isoTile.points[0].x - camera.x, isoTile.points[0].y - camera.y);   
+	ctx.lineTo(isoTile.points[1].x - camera.x, isoTile.points[1].y - camera.y);   
+	ctx.lineTo(isoTile.points[2].x - camera.x, isoTile.points[2].y - camera.y);   
+	ctx.lineTo(isoTile.points[3].x - camera.x, isoTile.points[3].y - camera.y);
+	ctx.lineTo(isoTile.points[0].x - camera.x, isoTile.points[0].y - camera.y);
+
+	ctx.stroke();
+	ctx.fill();
+	ctx.closePath();
+}
 
