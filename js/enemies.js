@@ -17,7 +17,21 @@ var enemies = [];
         color: "rgba(255, 255, 255, .5)"
     });
 }*/
-function createEnemy(pos, type){
+
+function createEnemy (pos, type){
+	var radius = 15;
+	var circle = new SAT.Circle(new SAT.Vector(pos.x,pos.y), radius);
+	circle.vx = 0;
+	circle.vy = 0;
+	circle.path = [];
+	circle.target = mapTwoD[5][5];
+	circle.speed = 2;
+	circle.totalHealth = 50;
+	circle.health = circle.totalHealth;
+	circle.type = type;
+	enemies.push(circle);
+}
+/*function createEnemy(pos, type){
 	switch(type){
 		case "red":
 			enemies.push({
@@ -81,30 +95,38 @@ function createEnemy(pos, type){
 			break;
 	}
 }
-createEnemy(tileToScreen(mapTwoD[0][0].pos), "red");	
+*/
+createEnemy(mapTwoD[0][0].pos, "red");	
 //createEnemy([map.nodes[1][1].x, map.nodes[1][1].y], "blue");
 //createEnemy(100,310,"yellow");
 	
 function drawEnemies(){
-	for ( var i = 0; i < enemies.length; i++ ) {
-        var p = enemies[i];
-        
-		drawEnemy(p);
-		//ctx.drawImage(test,p.x,p.y);
+	if (isometric){
+		for ( var i = 0; i < enemies.length; i++ ) {
+			var p = enemies[i];			
+			drawEnemy(p);
+		}
+	}
+	else{
+		//draw 2d
+		for ( var i = 0; i < enemies.length; i++ ) {
+			var p = enemies[i];			
+			drawEnemy(p);
+		}
+	}
+	
 		
-		
-		//draw healthbar
-		/*
-		if (p.health < p.totalHealth){
-			ctx.fillStyle = "rgba(0, 255, 0, 1)";
-			ctx.fillRect (p.x-camera.x-blockSize/2, p.y-camera.y-25, blockSize, 7);
-			ctx.fillStyle = "rgba(200, 0, 0, 1)"
-			ctx.fillRect (p.x+1-camera.x-blockSize/2, p.y-camera.y+1-25, blockSize-2, 7-2);
-			//area that is not damaged
-			ctx.fillStyle = "rgba(0, 200, 0, 1)"
-			ctx.fillRect (p.x+1-camera.x-blockSize/2, p.y-camera.y+1-25, (blockSize-2)*(p.health/p.totalHealth), 7-2); 
-		}*/
-    }
+	//draw healthbar
+	/*
+	if (p.health < p.totalHealth){
+		ctx.fillStyle = "rgba(0, 255, 0, 1)";
+		ctx.fillRect (p.x-camera.x-blockSize/2, p.y-camera.y-25, blockSize, 7);
+		ctx.fillStyle = "rgba(200, 0, 0, 1)"
+		ctx.fillRect (p.x+1-camera.x-blockSize/2, p.y-camera.y+1-25, blockSize-2, 7-2);
+		//area that is not damaged
+		ctx.fillStyle = "rgba(0, 200, 0, 1)"
+		ctx.fillRect (p.x+1-camera.x-blockSize/2, p.y-camera.y+1-25, (blockSize-2)*(p.health/p.totalHealth), 7-2); 
+	}*/
 }
 
 function updateEnemies(){

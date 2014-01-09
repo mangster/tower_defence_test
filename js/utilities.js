@@ -238,22 +238,12 @@ function getEnemyBoundaries(xIn, yIn) {
 }
 
 function drawEnemy (enemy) {
-
-	var cellPoints = getEnemyBoundaries(enemy.x, enemy.y);
 	ctx.beginPath();
 	
-	if (enemy.highlighted){
-		ctx.strokeStyle = "rgba(255, 255, 0, 1)";
-		ctx.fillStyle = "rgba(200, 200, 0, 1)";
-	}
-	ctx.lineWidth=2;
-	ctx.strokeStyle = "rgba(20, 20, 20, 1)";
-	ctx.fillStyle = "rgba(50, 50, 50, 1)";
-	ctx.moveTo(cellPoints.point1.x - camera.x, cellPoints.point1.y - camera.y);   
-	ctx.lineTo(cellPoints.point2.x - camera.x, cellPoints.point2.y - camera.y);   
-	ctx.lineTo(cellPoints.point3.x - camera.x, cellPoints.point3.y - camera.y);   
-	ctx.lineTo(cellPoints.point4.x - camera.x, cellPoints.point4.y - camera.y);
-	ctx.lineTo(cellPoints.point1.x - camera.x, cellPoints.point1.y - camera.y);
+	ctx.lineWidth=1;
+	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
+	ctx.fillStyle = "rgba(255, 0, 0, 1)";
+	ctx.arc(enemy.pos.x - camera.x,enemy.pos.y - camera.y,enemy.r,0,2*Math.PI);
 
 	ctx.stroke();
 	ctx.fill();
@@ -333,7 +323,7 @@ function drawTwoDTile (tile) {
 function twoDToIso(point) {
 	var posX = point.x
 	var posZ = point.y
-	//DET ÄR HÄR DET BLIR GALET
+	//Det är nog här hela kartan blir spegelvänd när jag går från 2d till iso. Fixa om det visar sig vara ett problem
 	var xCart = (posX - posZ)
 	var yCart = (posX + posZ) / 2;
 
