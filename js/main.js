@@ -11,7 +11,7 @@ var cellWidth = blockSize;
 var cellHeight = blockSize;
 var mapWidth = 1000;
 var mapHeight = 1000;
-var isometric = false;
+var isometric = true;
 var counter = 0;
 
 test = new Image();
