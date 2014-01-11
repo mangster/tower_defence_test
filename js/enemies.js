@@ -1,35 +1,18 @@
 // Create enemies
 var enemies = [];
 
-//create enemies
-/*for (var i = 0; i < 10; i++ ) {
-    enemies.push({
-        // Create random values for each of these:
-        x: randNum( 30, canvas.width - 30 ),
-        y: randNum( 30, canvas.height - 30 ),
-        vx: randNum( -50, 50 ),
-        vy: randNum( -50, 50 ),
-        ax: randNum( -40, 40 ),
-        ay: randNum( -40, 40 ),
-        radius: 15,
-        health: 50,
-		totalHealth: 50,
-        color: "rgba(255, 255, 255, .5)"
-    });
-}*/
-
 function createEnemy (pos, type){
 	var radius = 1*blockSize/2;
 	var circle = new SAT.Circle(new SAT.Vector(pos.x,pos.y), radius);
 	circle.vx = 0;
 	circle.vy = 0;
 	circle.path = [];
-	circle.target = mapTwoD[5][5];
+	circle.target = map[5][5];
 	circle.speed = 2;
 	circle.totalHealth = 50;
 	circle.health = circle.totalHealth;
 	circle.type = type;
-	enemies.push(circle);
+	entities.push(circle);
 }
 /*function createEnemy(pos, type){
 	switch(type){
@@ -96,22 +79,22 @@ function createEnemy (pos, type){
 	}
 }
 */
-createEnemy(mapTwoD[2][2].pos, "red");	
+createEnemy(map[2][2].pos, "red");	
 //createEnemy([map.nodes[1][1].x, map.nodes[1][1].y], "blue");
 //createEnemy(100,310,"yellow");
 	
 function drawEnemies(){
 	if (isometric){
-		for ( var i = 0; i < enemies.length; i++ ) {
-			var p = enemies[i];			
-			drawIsoEnemy(p);
+		for ( var i = 0; i < entities.length; i++ ) {
+			var p = entities[i];			
+			drawScreenEnemy(p);
 		}
 	}
 	else{
 		//draw 2d
-		for ( var i = 0; i < enemies.length; i++ ) {
-			var p = enemies[i];			
-			drawEnemy(p);
+		for ( var i = 0; i < entities.length; i++ ) {
+			var p = entities[i];			
+			drawWorldCircle(p);
 		}
 	}
 	
@@ -126,17 +109,18 @@ function drawEnemies(){
 		//area that is not damaged
 		ctx.fillStyle = "rgba(0, 200, 0, 1)"
 		ctx.fillRect (p.x+1-camera.x-blockSize/2, p.y-camera.y+1-25, (blockSize-2)*(p.health/p.totalHealth), 7-2); 
-	}*/
+	}
+	*/
 }
 
 function updateEnemies(){
-	if (enemies.length > 0){
-		for ( var i = 0; i < enemies.length; i++ ) {
+	if (entities.length > 0){
+		for ( var i = 0; i < entities.length; i++ ) {
 			
 			//check health of enemies
-			var p = enemies[i];
+			var p = entities[i];
 			if (p.health <= 0){
-				enemies.splice(i, 1);
+				entities.splice(i, 1);
 			}
 			p.pos.x += 1;
 			p.pos.y += 1;

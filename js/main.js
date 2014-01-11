@@ -12,7 +12,8 @@ var cellHeight = blockSize;
 var mapWidth = 1000;
 var mapHeight = 1000;
 var isometric = true;
-var counter = 0;
+
+var entities = [];
 
 test = new Image();
 test.src= "img/test.png";

@@ -23,32 +23,46 @@ window.onmousedown = function(e) {
     e = e || window.event;
     
     // get event location
-	
 	var location = {
         x: e.pageX + camera.x,
         y: e.pageY - offset.y + camera.y
     };
-	var twoDLocation = isoToTwoD(location);
-	console.log("clicked x = " + location.x + " clicked y = " + location.y);
-	
-	console.log("clicked x 2d = " + twoDLocation.x + " clicked y 2d = " + twoDLocation.y);
-	//var tile = isoToTwoD(location)
-	//console.log("clicked tile = " + tile);
-	//console.log("tile center: " + tileToScreen(tile).x + " " + tileToScreen(tile).y);
-	
-	
-	/*if (location.x >= 0 && location.x <= canvas.width && location.y >= 0 && location.y <= canvas.height){
-		for (i = 0; i < map.length; i++){
-			map[i].selected = false;
-			if (map[i].highlighted){
-			//if (location.x >= map[i].x && location.x < map[i].x + blockSize && location.y >= map[i].y && location.y < map[i].y + blockSize){		
-				createTower (map[i].x, map[i].y);
-				map[i].selected = true;
-				console.log(i);
+	if (isometric){
+		var worldLocation = screenToWorld(location);
+		var tileNo = worldToGrid(worldLocation);
+		for (var i = 0; i < map.length; i++){
+			for (var j = 0; j < map[i].length; j++){
+				var tile = map[i][j];
+				tile.selected = false;
 			}
 		}
-		//createTower(location);
-	}*/
+		
+		//TODO ändra koll, så att x och y är inom map length
+		if (map[tileNo.x][tileNo.y]) {
+			console.log(map[tileNo.x][tileNo.y]);
+			tile = map[tileNo.x][tileNo.y];
+			tile.selected = true;
+		}
+		console.log("Clicked x = " + worldLocation.x + " Clicked y = " + worldLocation.y);
+		console.log(tile);
+	}
+	else {
+		var tileNo = worldToGrid(location);
+		for (var i = 0; i < map.length; i++){
+			for (var j = 0; j < map[i].length; j++){
+				var tile = map[i][j];
+				tile.selected = false;
+			}
+		}
+		if (map[tileNo.x][tileNo.y]) {
+			console.log(map[tileNo.x][tileNo.y]);
+			tile = map[tileNo.x][tileNo.y];
+			tile.selected = true;
+		}
+		console.log("Clicked x = " + location.x + " Clicked y = " + location.y);
+		console.log(tile);
+	}
+	
 };
 
 window.onmousemove = function( e ) {
@@ -58,12 +72,13 @@ window.onmousemove = function( e ) {
         x: e.pageX + camera.x,
         y: e.pageY - offset.y + camera.y
     };
-	
+	/*
 	for (var i = 0; i < map.nodes.length; i++){
 		for (var j = 0; j < map.nodes[i].length; j++){
 			map.nodes[i][j].highlighted = false;
 		}
 	}
+	*/
 	//tile = screenToTile(location.x, location.y);
 	if (tile != null){		
 		tile.highlighted = true;
