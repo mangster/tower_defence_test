@@ -19,7 +19,7 @@ for (var i = 0; i < map.nodes.length; i++){
 		]);
 		polygon.type = tile.type;
 		//polygon.pos = mapToTwoD(tile.pos, 0);
-		polygon.recalc();
+		tile.twoDRef = polygon;
 		row.push(polygon);
 	}
 	mapTwoD.push(row);

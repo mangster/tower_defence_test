@@ -6,7 +6,7 @@ var ctx = canvas.getContext( "2d" );
 // Frames-per-second
 var FPS = 30;
 
-var blockSize = 30;
+var blockSize = 50;
 var cellWidth = blockSize;
 var cellHeight = blockSize;
 var mapWidth = 1000;
@@ -38,7 +38,7 @@ function update() {
 	//updateTowers();
 	updateMap();
 	//updateBullets();
-	//updateEnemies();
+	updateEnemies();
 }
 
 

@@ -89,122 +89,32 @@ function goTo (obj1, obj2){
 		}*/
 	}
 }
+function mapToTwoD(Cell, offset) {
 
-function screenToTile(xIn, yIn){
-
-	//var xCart = -(xIn - canvas.width/2); 
-	//var yCart = yIn - canvas.height/2;
-	var xCart = -(xIn); 
-	var yCart = yIn;
-	
-	
-	var posZ = ((yCart * 2) - xCart)/2
-	//steg 1var posZ = (yCart * 2) - posX;
-	//steg 2var posZ = (yCart * 2) - xCart -posZ;
-	var posX = xCart + posZ;
-	
-	var rX = posX / cellWidth;
-	var rY = posZ / cellHeight;
-	
-	x = Math.round(rX);
-	y = Math.round(rY);
-	if (x >= 0&& x < mapWidth/blockSize&& y >= 0&& y < mapHeight/blockSize){
-		return map.nodes[x][y];
-	}
-	else{
-		return null;
-	}
-	//var tile = map.nodes[Math.round(rX)][Math.round(rY)];
-	//return [Math.floor(rX), Math.floor(rY)];
-	//return tile;
-}
-
-function tileToScreen(tile){
-	var posX = tile.x * cellWidth
-	var posZ = tile.y * cellHeight
-
-	var xCart = (posX - posZ)
-	var yCart = (posX + posZ) / 2;
-
-	//var rX = -xCart + canvas.width/2;
-	//var rY = +yCart + canvas.height/2;
-	var rX = -xCart;
-	var rY = +yCart;
-
-	//return [Math.floor(rX), Math.floor(rY)];
-	return { "x": Math.floor(rX), "y": Math.floor(rY) };
-}
-	
-
-function getCellBoundaries(theCellX, theCellY) {
-
-	//right
-	var aOffset = { "offsetX": (cellWidth * -1) / 2, "offsetY": (cellHeight * -1) / 2 };
-	var aCell = { "x": theCellX, "y": theCellY };
-	var p1 = getScreenCoords(aCell, aOffset);
-
-	//bottom
-	aOffset = { "offsetX": (cellWidth) / 2, "offsetY": (cellHeight * -1) / 2 };
-	var p2 = getScreenCoords(aCell, aOffset);
-
-	//left
-	aOffset = { "offsetX": (cellWidth) / 2, "offsetY": (cellHeight) / 2 };
-	var p3 = getScreenCoords(aCell, aOffset);
-
-	//top
-	aOffset = { "offsetX": (cellWidth * -1) / 2, "offsetY": (cellHeight) / 2 };
-	var p4 = getScreenCoords(aCell, aOffset);
-
-	return { "point1": p1, "point2": p2, "point3": p3, "point4": p4 };
-}
-
-function getScreenCoords(Cell, offset) {
-
-	var posX = Cell.x * cellWidth + offset.offsetX;
-	var posZ = Cell.y * cellHeight - offset.offsetY;
-
-	var xCart = (posX - posZ)
-	var yCart = (posX + posZ) / 2;
-
-	//var rX = -xCart + canvas.width/2;
-	//var rY = +yCart + canvas.height/2;
-	var rX = -xCart;
-	var rY = +yCart;
+	var rX = Cell.x * cellWidth + offset.offsetX;
+	var rY = Cell.y * cellHeight - offset.offsetY;
 
 	return { "x": Math.floor(rX), "y": Math.floor(rY) };
 }
 
-function drawTile (tile) {
+function twoDToIso(point) {
+	var rX = (point.x - point.y);
+	var rY = (point.x + point.y) / 2;
 
-	var cellPoints = getCellBoundaries(tile.x, tile.y);
-	ctx.beginPath();
-	
-	if (tile.highlighted){
-		ctx.strokeStyle = "rgba(255, 255, 0, 1)";
-		ctx.fillStyle = "rgba(200, 200, 0, 1)";
-	}
-	else if (tile.type === 1){
-		ctx.strokeStyle = "rgba(0, 200, 0, 1)";
-		ctx.fillStyle = "rgba(0, 255, 0, 1)";
-	}
-	else if (tile.type === 0){
-		ctx.strokeStyle = "rgba(0, 200, 0, 1)";
-		ctx.fillStyle = "rgba(100, 100, 100, 1)";
-	}
-	else{
-		ctx.strokeStyle = "red";
-		ctx.fillStyle = "red";
-	}
-	
-	ctx.moveTo(cellPoints.point1.x - camera.x, cellPoints.point1.y - camera.y);   
-	ctx.lineTo(cellPoints.point2.x - camera.x, cellPoints.point2.y - camera.y);   
-	ctx.lineTo(cellPoints.point3.x - camera.x, cellPoints.point3.y - camera.y);   
-	ctx.lineTo(cellPoints.point4.x - camera.x, cellPoints.point4.y - camera.y);
-	ctx.lineTo(cellPoints.point1.x - camera.x, cellPoints.point1.y - camera.y);
+	return { "x": Math.floor(rX), "y": Math.floor(rY) };
+}
 
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
+function isoToTwoD(point) {
+	//rX = (point.y + point.x);
+	//rY = (point.x - point.y)/2;
+	
+	rY = ((point.y * 2) - point.x)/2;
+	rX = point.x + rY;
+
+	
+	
+
+	return { "x": Math.floor(rX), "y": Math.floor(rY) };
 }
 
 function getEnemyBoundaries(xIn, yIn) {	
@@ -239,7 +149,7 @@ function getEnemyBoundaries(xIn, yIn) {
 
 function drawEnemy (enemy) {
 	ctx.beginPath();
-	var radius = enemy.r * blockSize/2;
+	var radius = enemy.r;
 	ctx.lineWidth=1;
 	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
 	ctx.fillStyle = "rgba(255, 0, 0, 1)";
@@ -248,21 +158,6 @@ function drawEnemy (enemy) {
 	ctx.stroke();
 	ctx.fill();
 	ctx.closePath();
-}
-
-function mapToTwoD(Cell, offset) {
-
-	var posX = Cell.x * cellWidth + offset.offsetX;
-	var posZ = Cell.y * cellHeight - offset.offsetY;
-
-	//var xCart = (posX - posZ)
-	//var yCart = (posX + posZ) / 2;
-	
-	//ändra tillbaka till -posX om något blivit galet
-	var rX = +posX;
-	var rY = +posZ;
-
-	return { "x": Math.floor(rX), "y": Math.floor(rY) };
 }
 
 function getTwoDTileBoundaries(theCellX, theCellY) {
@@ -324,22 +219,6 @@ function drawTwoDTile (tile) {
 }
 
 
-function twoDToIso(point) {
-	var posX = point.x
-	var posZ = point.y
-	var xCart = (posX - posZ)
-	var yCart = (posX + posZ) / 2;
-
-	//var rX = -xCart + canvas.width/2;
-	//var rY = +yCart + canvas.height/2;
-	
-	//gör om till -xCart om något blivit galet
-	var rX = xCart;
-	var rY = +yCart;
-
-	return { "x": Math.floor(rX), "y": Math.floor(rY) };
-}
-
 function drawIsoTile (tile) {
 	var isoTile = {}
 	isoTile.points = [];
@@ -376,22 +255,10 @@ function drawIsoTile (tile) {
 	ctx.closePath();
 }
 
-function drawIsoEnemy (enemy) {
+/*function drawIsoEnemy (enemy) {
 	var isoPos = twoDToIso(enemy.pos); 
-	ctx.beginPath();
-	
-	/*
-	ctx.lineWidth=1;
-	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
-	ctx.fillStyle = "rgba(255, 0, 0, 1)";
-	ctx.arc(isoPos.x - camera.x,isoPos.y - camera.y,enemy.r,0,2*Math.PI);
-
-	ctx.stroke();
-	ctx.fill();
-	ctx.closePath();
-	*/
-	var height = (enemy.r * blockSize/2) * Math.sqrt(0.5);
-	var width = (enemy.r * blockSize/2) * Math.sqrt(1.5);
+	var height = (enemy.r) * 0.7;
+	var width = (enemy.r) * 2*0.7;
 	ctx.beginPath();
 	for (var i = 0 * Math.PI; i < 2 * Math.PI; i += 0.01 ) {
 		xPos = isoPos.x - camera.x -  (height * Math.sin(i)) * Math.sin(0 * Math.PI) + (width * Math.cos(i)) * Math.cos(0 * Math.PI);
@@ -409,5 +276,56 @@ function drawIsoEnemy (enemy) {
 	ctx.stroke();
 	ctx.fill();
 	ctx.closePath();
+}*/
+
+function drawIsoEnemy (enemy) {
+	var isoPos = twoDToIso(enemy.pos); 
+	var height = (enemy.r) * 0.7*2;
+	var width = (enemy.r) * 2*0.7*2;
+	/*
+	ctx.beginPath();
+	for (var i = 0 * Math.PI; i < 2 * Math.PI; i += 0.01 ) {
+		xPos = isoPos.x - camera.x -  (height * Math.sin(i)) * Math.sin(0 * Math.PI) + (width * Math.cos(i)) * Math.cos(0 * Math.PI);
+		yPos = isoPos.y - camera.y + (width * Math.cos(i)) * Math.sin(0 * Math.PI) + (height * Math.sin(i)) * Math.cos(0 * Math.PI);
+
+		if (i == 0) {
+			ctx.moveTo(xPos, yPos);
+		} else {
+			ctx.lineTo(xPos, yPos);
+		}
+	}
+	ctx.lineWidth=1;
+	ctx.strokeStyle = "rgba(255, 0, 0, 1)";
+	ctx.fillStyle = "rgba(255, 0, 0, 1)";
+	ctx.stroke();
+	ctx.fill();
+	ctx.closePath();
+	*/
+	drawEllipseByCenter(isoPos.x - camera.x, isoPos.y-camera.y, width, height);
 }
 
+function drawEllipseByCenter(cx, cy, w, h) {
+  drawEllipse(cx - w/2.0, cy - h/2.0, w, h);
+}
+
+function drawEllipse(x, y, w, h) {
+  var kappa = .5522848,
+      ox = (w / 2) * kappa, // control point offset horizontal
+      oy = (h / 2) * kappa, // control point offset vertical
+      xe = x + w,           // x-end
+      ye = y + h,           // y-end
+      xm = x + w / 2,       // x-middle
+      ym = y + h / 2;       // y-middle
+
+  ctx.beginPath();
+  ctx.moveTo(x, ym);
+  ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+  ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+  ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+  ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+  ctx.strokeStyle = "rgba(255, 0, 0, 1)";
+	ctx.fillStyle = "rgba(255, 0, 0, 1)";
+	ctx.stroke();
+	ctx.fill();
+	ctx.closePath();
+}

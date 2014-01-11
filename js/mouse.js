@@ -28,9 +28,11 @@ window.onmousedown = function(e) {
         x: e.pageX + camera.x,
         y: e.pageY - offset.y + camera.y
     };
-	console.log("clicked x = " + location.x);
-	console.log("clicked y = " + location.y);
-	var tile = screenToTile(location.x,location.y)
+	var twoDLocation = isoToTwoD(location);
+	console.log("clicked x = " + location.x + " clicked y = " + location.y);
+	
+	console.log("clicked x 2d = " + twoDLocation.x + " clicked y 2d = " + twoDLocation.y);
+	//var tile = isoToTwoD(location)
 	//console.log("clicked tile = " + tile);
 	//console.log("tile center: " + tileToScreen(tile).x + " " + tileToScreen(tile).y);
 	
@@ -62,7 +64,7 @@ window.onmousemove = function( e ) {
 			map.nodes[i][j].highlighted = false;
 		}
 	}
-	tile = screenToTile(location.x, location.y);
+	//tile = screenToTile(location.x, location.y);
 	if (tile != null){		
 		tile.highlighted = true;
 	}

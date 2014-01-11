@@ -19,7 +19,7 @@ var enemies = [];
 }*/
 
 function createEnemy (pos, type){
-	var radius = 4;
+	var radius = 1*blockSize/2;
 	var circle = new SAT.Circle(new SAT.Vector(pos.x,pos.y), radius);
 	circle.vx = 0;
 	circle.vy = 0;
@@ -138,15 +138,17 @@ function updateEnemies(){
 			if (p.health <= 0){
 				enemies.splice(i, 1);
 			}
+			p.pos.x += 1;
+			p.pos.y += 1;
 			//om ingen path så skaffa en
 			if (!p.path[0]){
 				//om den redan står på target
-				var start = screenToTile(p.x, p.y);
+				/*var start = screenToTile(p.x, p.y);
 				var end = p.target;
 				p.path = astar.search(map.nodes, start, end, false);
 				if (!p.path[0]){
 					console.log("enemy placed on a friggin rock ya moron!");
-				}
+				}*/
 			}
 
 			else if (tileToScreen(p.path[0]).x > p.x - blockSize*2 && tileToScreen(p.path[0]).x < p.x + blockSize*2 && tileToScreen(p.path[0]).y > p.y - blockSize*2 && tileToScreen(p.path[0]).y < p.x + blockSize*2){
