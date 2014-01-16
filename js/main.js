@@ -1,5 +1,5 @@
 // THREE.js TEST
-var cameraDistance = 80;
+var cameraDistance = 8;
 var cameraAngle = 35.264;
 var stats = initStats();
 
@@ -17,10 +17,13 @@ renderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMapEnabled = true;
 
+
+/*
 plane = new THREE.Mesh( new THREE.PlaneGeometry(60,60,1,1), new THREE.MeshBasicMaterial({color: 0xffffff}) );
 plane.rotation.x = - Math.PI / 2;
 plane.visible = false;
 scene.add( plane );
+*/
 
 var lookAtGeom = new THREE.CubeGeometry(1,1,1);
 var focus = new THREE.Mesh(lookAtGeom,new THREE.MeshLambertMaterial({color: 0xff0000}));
@@ -37,11 +40,8 @@ focus.position.z = 0;
 
 
 var cameraY = Math.abs(Math.sin(cameraAngle) * cameraDistance);
-
 var flatDistance = Math.sqrt(cameraDistance * cameraDistance - cameraY*cameraY);
-
 var cameraX = Math.sqrt((flatDistance*flatDistance)/2);
-
 
 camera.position.x = -cameraX;
 camera.position.y = cameraY;
@@ -53,24 +53,33 @@ focus.rotation.z = 0;
 focus.add(camera);
 scene.add(focus);
 
- var material = new THREE.MeshLambertMaterial( {color: 0x44ff44 } );
+var grass = new THREE.MeshLambertMaterial( {color: 0x44ff44 } );
+var water = new THREE.MeshLambertMaterial( {color: 0x4444ff } );
 var geom = new THREE.CubeGeometry(1,1,1);
-var cube = new THREE.Mesh(geom,material);
 
-
-
+var map = generateHeight( 100, 100 );
+var count = 0;
 for (var i = 0; i < 100; i++){
 	for (var j = 0; j < 100; j++){
-		var height = Math.random();
-		var cube = new THREE.Mesh(geom,material);
+		var height = Math.round(map[count]/20);
+		if (height <= 1){
+			var cube = new THREE.Mesh(geom,water);
+		}
+		else{
+			var cube = new THREE.Mesh(geom,grass);
+		}
 		cube.position.x = i;
-		if (height > 0.8){
+		cube.receiveShadow = true;
+		cube.castShadow = true;
+		cube.position.y = height;
+		/*if (height > 0.8){
 			cube.position.y = 1;
 		}
 		else{
 			cube.position.y = 0;
-		}
+		}*/
 		cube.position.z = j;
+		count++;
 scene.add(cube);
 	}
 }
@@ -86,55 +95,32 @@ scene.add(ambientLight);
       directionalLight.position.set(1, 1, 1).normalize();
       scene.add(directionalLight);
 
-
-var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-directionalLight.position.set( 0, 1, 0 );
-scene.add( directionalLight );
-*/
-
-// add spotlight for the shadows
-/*
-var spotLight = new THREE.SpotLight( 0xffffff );
-spotLight.position.set( -40, 60, -10 );
-spotLight.castShadow = true;
-scene.add( spotLight );
+add(ambientLight);
 */
 /*
-var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-hemiLight.position.set(0, 500, 0);
-hemiLight.visible = true;
-scene.add(hemiLight);
-*/
-
 var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
 hemiLight.color.setHSL( 0.6, 0.75, 0.5 );
 hemiLight.groundColor.setHSL( 0.095, 0.5, 0.5 );
 hemiLight.position.set( 0, 500, 0 );
-scene.add( hemiLight );
+scene.add( hemiLight );*/
 
-var dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-dirLight.position.set( -1, 0.75, 1 );
-dirLight.position.multiplyScalar( 50);
-dirLight.name = "dirlight";
-//dirLight.shadowCameraVisible = true;
+ 
+var ambientLight = new THREE.AmbientLight(0x0c0c0c);
+scene.add(ambientLight);
 
-scene.add( dirLight );
+spot = new THREE.SpotLight(0xffffff);
+spot.position.set(0, 150, 0)
+spot.shadowCameraNear = 20; // keep near and far planes as tight as possible
+spot.shadowCameraFar = 151; // shadows not cast past the far plane
+spot.shadowCameraFov = 70;
+spot.shadowCameraVisible = true;
 
-dirLight.castShadow = true;
-dirLight.shadowMapWidth = dirLight.shadowMapHeight = 1024*2;
+//Un-Comment this
 
-var d = 300;
-
-dirLight.shadowCameraLeft = -d;
-dirLight.shadowCameraRight = d;
-dirLight.shadowCameraTop = d;
-dirLight.shadowCameraBottom = -d;
-
-dirLight.shadowCameraFar = 3500;
-dirLight.shadowBias = -0.0001;
-dirLight.shadowDarkness = 0.35;
+spot.castShadow = true;
 
 
+scene.add(spot);
 
 // add the output of the renderer to the html element
 $("#WebGL-output").append(renderer.domElement);
