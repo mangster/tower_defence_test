@@ -1,14 +1,15 @@
 // THREE.js TEST
-var cameraDistance = 8;
+var cameraDistance = 40;
 var cameraAngle = 35.264;
+var cameraAngle = 45;
 var stats = initStats();
 
 // create a scene, that will hold all our elements such as objects, cameras and lights.
 var scene = new THREE.Scene();
 
 // create a camera, which defines where we're looking at.
-//var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera = new THREE.OrthographicCamera( window.innerWidth / - cameraDistance, window.innerWidth / cameraDistance, window.innerHeight / cameraDistance, window.innerHeight / - cameraDistance, -200, 500 );
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+//camera = new THREE.OrthographicCamera( window.innerWidth / - cameraDistance, window.innerWidth / cameraDistance, window.innerHeight / cameraDistance, window.innerHeight / - cameraDistance, -200, 500 );
 
 // create a render and set the size
 var renderer = new THREE.WebGLRenderer({});
@@ -36,8 +37,6 @@ focus.position.z = 0;
 // position and point the camera to the center of the scene
 
 
-//var cameraAngle = 30;
-
 
 var cameraY = Math.abs(Math.sin(cameraAngle) * cameraDistance);
 var flatDistance = Math.sqrt(cameraDistance * cameraDistance - cameraY*cameraY);
@@ -53,20 +52,30 @@ focus.rotation.z = 0;
 focus.add(camera);
 scene.add(focus);
 
-var grass = new THREE.MeshLambertMaterial( {color: 0x44ff44 } );
-var water = new THREE.MeshLambertMaterial( {color: 0x4444ff } );
+//var grass = new THREE.MeshLambertMaterial( {color: 0x44ff44 } );
+//var water = new THREE.MeshLambertMaterial( {color: 0x4444ff } );
+var grass = new THREE.MeshLambertMaterial( {color: 0x77DD77 } );
+var dirt = new THREE.MeshLambertMaterial( {color: 0xA87B5A } );
+var rock = new THREE.MeshLambertMaterial( {color: 0xC6CBC7 } );
+var water = new THREE.MeshLambertMaterial( {color: 0x7777DD } );
 var geom = new THREE.CubeGeometry(1,1,1);
 
 var map = generateHeight( 100, 100 );
 var count = 0;
 for (var i = 0; i < 100; i++){
 	for (var j = 0; j < 100; j++){
-		var height = Math.round(map[count]/20);
-		if (height <= 1){
+		var height = (map[count]/10);
+		if (height < 1){
 			var cube = new THREE.Mesh(geom,water);
 		}
-		else{
+		else if (height < 7){
 			var cube = new THREE.Mesh(geom,grass);
+		}
+		else if (height < 9){
+			var cube = new THREE.Mesh(geom,dirt);
+		}
+		else{
+			var cube = new THREE.Mesh(geom,rock);
 		}
 		cube.position.x = i;
 		cube.receiveShadow = true;
@@ -85,42 +94,26 @@ scene.add(cube);
 }
 
 
-
-// add subtle ambient lighting
-/*
-var ambientLight = new THREE.AmbientLight(0x0c0c0c);
+var ambientLight = new THREE.AmbientLight(0x505050);
 scene.add(ambientLight);
 
-  var directionalLight = new THREE.DirectionalLight(0xffffff);
-      directionalLight.position.set(1, 1, 1).normalize();
-      scene.add(directionalLight);
-
-add(ambientLight);
+/*
+light = new THREE.DirectionalLight(0xa0a0a0);
+light.position.set(100, 15, 100);
 */
-/*
-var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
-hemiLight.color.setHSL( 0.6, 0.75, 0.5 );
-hemiLight.groundColor.setHSL( 0.095, 0.5, 0.5 );
-hemiLight.position.set( 0, 500, 0 );
-scene.add( hemiLight );*/
+light = new THREE.SpotLight(0xaaaaaa);
+light.position.set(120, 100, 120);
 
- 
-var ambientLight = new THREE.AmbientLight(0x0c0c0c);
-scene.add(ambientLight);
+light.shadowCameraNear = 1; // keep near and far planes as tight as possible
+light.shadowCameraFar = 200; // shadows not cast past the far plane
+light.shadowCameraFov = 70;
 
-spot = new THREE.SpotLight(0xffffff);
-spot.position.set(0, 150, 0)
-spot.shadowCameraNear = 20; // keep near and far planes as tight as possible
-spot.shadowCameraFar = 151; // shadows not cast past the far plane
-spot.shadowCameraFov = 70;
-spot.shadowCameraVisible = true;
+light.shadowCameraVisible = false;
 
-//Un-Comment this
+light.castShadow = true;
 
-spot.castShadow = true;
-
-
-scene.add(spot);
+renderer.shadowMapSoft = true;
+scene.add(light);
 
 // add the output of the renderer to the html element
 $("#WebGL-output").append(renderer.domElement);
@@ -135,7 +128,8 @@ focus.update = function() {
 	focus.position.x += this.vx;
 	focus.position.z += this.vz;
 }
-
+focus.position.x = 40;
+focus.position.z = 40;
 render();
 
 function render() {
