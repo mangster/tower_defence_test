@@ -36,11 +36,12 @@ var rock = new THREE.MeshLambertMaterial( {color: 0xC6CBC7 } );
 var water = new THREE.MeshLambertMaterial( {color: 0x7777DD } );
 var geom = new THREE.CubeGeometry(1,1,1);
 
-var map = generateHeight( 100, 100 );
+var mapRandom = generateHeight( 100, 100 );
+var map = new THREE.Object3D();
 var count = 0;
 for (var i = 0; i < 100; i++){
 	for (var j = 0; j < 100; j++){
-		var height = (map[count]/10);
+		var height = (mapRandom[count]/10);
 		if (height < 1){
 			var cube = new THREE.Mesh(geom,water);
 		}
@@ -60,11 +61,24 @@ for (var i = 0; i < 100; i++){
 
 		cube.position.z = j;
 		count++;
-		scene.add(cube);
+		map.add(cube);
+		//scene.add(cube);
 	}
 }
+scene.add(map);
 
-// Creating the lights
+loader = new THREE.ColladaLoader();
+loader.options.convertUpAxis = true;
+loader.load("models/villager.dae",function colladaReady( collada ){
+villager = collada.scene;
+villager.scale.x = villager.scale.y = villager.scale.z = 10;
+//villager.getObjectByName("body");
+//skin = collada.skins [ 0 ];
+scene.add( villager );
+});
+
+
+
 var ambientLight = new THREE.AmbientLight(0x505050);
 scene.add(ambientLight);
 
