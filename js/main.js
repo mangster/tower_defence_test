@@ -69,13 +69,15 @@ scene.add(map);
 
 loader = new THREE.ColladaLoader();
 loader.options.convertUpAxis = true;
-loader.load("models/villager.dae",function colladaReady( collada ){
-villager = collada.scene;
-villager.scale.x = villager.scale.y = villager.scale.z = 10;
-//villager.getObjectByName("body");
-//skin = collada.skins [ 0 ];
-scene.add( villager );
+loader.load("/models/villager_anim.dae",function colladaReady( collada ){
+	villager = collada.scene;
+	villager.scale.x = villager.scale.y = villager.scale.z = 0.5;
+	//villager.getObjectByName("body");
+	skin = collada.skins [ 0 ];
+	scene.add( villager );
 });
+var clock = new THREE.Clock();
+var t = 0;
 
 
 
