@@ -1,12 +1,5 @@
-#canvas {
-    background: black;
-    display: block;
-    margin: 15px auto;
-}
-
-html, body {
-  width:  100%;
-  height: 100%;
-  margin: 0px;
-  overflow: hidden;
+body {
+	/* set margin to 0 and overflow to hidden, to go fullscreen */
+	margin: 0;
+	overflow: hidden;
 }
