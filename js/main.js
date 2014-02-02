@@ -1,16 +1,37 @@
 // once everything is loaded, we run our Three.js stuff.
 var meshAnim;
 var animLabels;
-// Walking: 1-41, 0-40 just nu för att det inte ska bugga ur
-var animOffset       = 0,   // starting frame of animation
-	walking         = true,
+// Walking: 1-41
+var walking = true;
+var startFrame      = 1,   // starting frame of animation
+	endFrame		= 41,
+	keyframes       = endFrame - startFrame,   // total number of animation frames
 	duration        = 1000, // milliseconds to complete animation
-	keyframes       = 40,   // total number of animation frames
 	interpolation   = duration / keyframes, // milliseconds per frame
 	lastKeyframe    = 0,    // previous keyframe
 	currentKeyframe = 0;
 
 var mat;
+
+function walk(){
+	walking = true;
+	startFrame      = 1;
+	endFrame		= 41;
+	keyframes       = endFrame - startFrame;
+	duration        = 1000;
+	interpolation   = duration / keyframes;
+
+}
+function stop(){
+	walking = false;
+	startFrame      = 0;
+	endFrame		= 0;
+	keyframes       = endFrame - startFrame;
+	duration        = 1000;
+	interpolation   = duration / keyframes;
+	meshAnim.morphTargetInfluences[ lastKeyframe ] = 0;
+	meshAnim.morphTargetInfluences[ currentKeyframe ] = 0;
+}
 	
 $(function () {
 
@@ -105,104 +126,55 @@ $(function () {
 	}
 	scene.add(map);
 
-	 var mesh;
-        meshAnim;
-        var frames = [];
-        var currentMesh;
-        var clock = new THREE.Clock();
+	var clock = new THREE.Clock();
 
-        var loader = new THREE.JSONLoader();
-        loader.load('/models/villager.js', function (geometry, mat) {
+	var loader = new THREE.JSONLoader();
+	loader.load('/models/villager.js', function (geometry, mat) {
 
-            var mat = new THREE.MeshLambertMaterial(
-                    {color: 0xffffff, morphNormals: false,
-                        morphTargets: true,
-                        vertexColors: THREE.FaceColors});
+		var mat = new THREE.MeshLambertMaterial(
+				{color: 0xffffff, morphNormals: false,
+					morphTargets: true,
+					vertexColors: THREE.FaceColors});
 
+		geometry.computeVertexNormals();
+		geometry.computeFaceNormals();
+		geometry.computeMorphNormals();
 
-            var mat2 = new THREE.MeshLambertMaterial(
-                    {color: 0xffffff, vertexColors: THREE.FaceColors});
+		console.log(geometry);
 
-            mesh = new THREE.Mesh(geometry, mat);
-            mesh.position.x = -100;
-            frames.push(mesh);
-            currentMesh = mesh;
-            //morphColorsToFaceColors(geometry);
+		meshAnim = new THREE.MorphAnimMesh(geometry, mat);
+		meshAnim.position.x = 0;
+		meshAnim.position.z = 0;
 
-            mesh.geometry.morphTargets.forEach(function (e) {
-                var geom = new THREE.Geometry();
-                geom.vertices = e.vertices;
-                geom.faces = geometry.faces;
+		scene.add(meshAnim);
 
-
-                var morpMesh = new THREE.Mesh(geom, mat2);
-                frames.push(morpMesh);
-                morpMesh.position.x = -100;
-
-            });
-
-            geometry.computeVertexNormals();
-            geometry.computeFaceNormals();
-            geometry.computeMorphNormals();
-
-            console.log(geometry);
-
-            meshAnim = new THREE.MorphAnimMesh(geometry, mat);
-            meshAnim.duration = 3000;
-            meshAnim.position.x = 0;
-            meshAnim.position.z = 0;
-
-            scene.add(meshAnim);
-
-            //showFrame(0);
-
-        }, '../assets/models');
+	}, '../assets/models');
 
 		
-        function morphColorsToFaceColors(geometry) {
+	function morphColorsToFaceColors(geometry) {
 
-            if (geometry.morphColors && geometry.morphColors.length) {
+		if (geometry.morphColors && geometry.morphColors.length) {
 
-                var colorMap = geometry.morphColors[ 0 ];
-                for (var i = 0; i < colorMap.colors.length; i++) {
-                    geometry.faces[ i ].color = colorMap.colors[ i ];
-                    geometry.faces[ i ].color.offsetHSL(0, 0.3, 0);
-                }
-            }
-        }
+			var colorMap = geometry.morphColors[ 0 ];
+			for (var i = 0; i < colorMap.colors.length; i++) {
+				geometry.faces[ i ].color = colorMap.colors[ i ];
+				geometry.faces[ i ].color.offsetHSL(0, 0.3, 0);
+			}
+		}
+	}
 		
 
 
 	render();
 
-
 	function render() {
 		stats.update();
 
-		/*
-		var delta = clock.getDelta();
-            renderer.clear();
-            if (meshAnim) {
-                meshAnim.updateAnimation(delta * 1000);
-                meshAnim.rotation.y += 0.01;
-            }
-		*/
-		/*
-		var delta = clock.getDelta();
-		
-		if (meshAnim) {
-			if (meshAnim) {
-				meshAnim.updateAnimation(delta * 1000);
-			}
-		}
-		*/
-		
-		
-		if ( meshAnim){
+		if ( meshAnim && walking){
 			meshAnim.position.x += 0.1;
 			// Alternate morph targets
 			time = new Date().getTime() % duration;
-			keyframe = Math.floor( time / interpolation ) + animOffset;
+			keyframe = Math.floor( time / interpolation ) + startFrame;
 			if ( keyframe != currentKeyframe ) 
 			{
 				meshAnim.morphTargetInfluences[ lastKeyframe ] = 0;
