@@ -1,15 +1,15 @@
 // once everything is loaded, we run our Three.js stuff.
 var meshAnim;
 var animLabels;
-/*
+// Walking: 1-41, 0-40 just nu för att det inte ska bugga ur
 var animOffset       = 0,   // starting frame of animation
 	walking         = true,
-	duration        = 10000, // milliseconds to complete animation
-	keyframes       = 41,   // total number of animation frames
+	duration        = 1000, // milliseconds to complete animation
+	keyframes       = 40,   // total number of animation frames
 	interpolation   = duration / keyframes, // milliseconds per frame
 	lastKeyframe    = 0,    // previous keyframe
 	currentKeyframe = 0;
-*/	
+
 var mat;
 	
 $(function () {
@@ -105,45 +105,72 @@ $(function () {
 	}
 	scene.add(map);
 
-	
+	 var mesh;
+        meshAnim;
+        var frames = [];
+        var currentMesh;
+        var clock = new THREE.Clock();
 
-	// call the render function
-	var step = 0;
+        var loader = new THREE.JSONLoader();
+        loader.load('/models/villager.js', function (geometry, mat) {
 
-	meshAnim;
-	var clock = new THREE.Clock();
+            var mat = new THREE.MeshLambertMaterial(
+                    {color: 0xffffff, morphNormals: false,
+                        morphTargets: true,
+                        vertexColors: THREE.FaceColors});
 
-	var loader = new THREE.ColladaLoader();
-	loader.load('/models/villager.dae', function (collada) {
 
-		var geom = collada.skins[0].geometry;
-		mat = collada.skins[0].material;
+            var mat2 = new THREE.MeshLambertMaterial(
+                    {color: 0xffffff, vertexColors: THREE.FaceColors});
 
-		// create a smooth skin
-		geom.computeMorphNormals();
-		mat.morphNormals = true;
+            mesh = new THREE.Mesh(geometry, mat);
+            mesh.position.x = -100;
+            frames.push(mesh);
+            currentMesh = mesh;
+            //morphColorsToFaceColors(geometry);
 
-		// create the animation
-		meshAnim = new THREE.MorphAnimMesh(geom, mat);
-		// Animation parsing	
-		meshAnim.parseAnimations();
-            // parse the animations and add them to the control
-            animLabels = [];
-            for (var key in meshAnim.geometry.animations) {
-                if (key === 'length' || !meshAnim.geometry.animations.hasOwnProperty(key)) continue;
-                animLabels.push(key);
+            mesh.geometry.morphTargets.forEach(function (e) {
+                var geom = new THREE.Geometry();
+                geom.vertices = e.vertices;
+                geom.faces = geometry.faces;
+
+
+                var morpMesh = new THREE.Mesh(geom, mat2);
+                frames.push(morpMesh);
+                morpMesh.position.x = -100;
+
+            });
+
+            geometry.computeVertexNormals();
+            geometry.computeFaceNormals();
+            geometry.computeMorphNormals();
+
+            console.log(geometry);
+
+            meshAnim = new THREE.MorphAnimMesh(geometry, mat);
+            meshAnim.duration = 3000;
+            meshAnim.position.x = 0;
+            meshAnim.position.z = 0;
+
+            scene.add(meshAnim);
+
+            //showFrame(0);
+
+        }, '../assets/models');
+
+		
+        function morphColorsToFaceColors(geometry) {
+
+            if (geometry.morphColors && geometry.morphColors.length) {
+
+                var colorMap = geometry.morphColors[ 0 ];
+                for (var i = 0; i < colorMap.colors.length; i++) {
+                    geometry.faces[ i ].color = colorMap.colors[ i ];
+                    geometry.faces[ i ].color.offsetHSL(0, 0.3, 0);
+                }
             }
-
-		// position the mesh
-		meshAnim.scale.set(1, 1, 1);
-		meshAnim.rotation.x = -0.5 * Math.PI;
-		meshAnim.position.x = 0;
-		meshAnim.position.y = 0;
-
-		scene.add(meshAnim);
-		meshAnim.duration = 1000;
-
-	});
+        }
+		
 
 
 	render();
@@ -152,7 +179,15 @@ $(function () {
 	function render() {
 		stats.update();
 
-
+		/*
+		var delta = clock.getDelta();
+            renderer.clear();
+            if (meshAnim) {
+                meshAnim.updateAnimation(delta * 1000);
+                meshAnim.rotation.y += 0.01;
+            }
+		*/
+		/*
 		var delta = clock.getDelta();
 		
 		if (meshAnim) {
@@ -160,9 +195,11 @@ $(function () {
 				meshAnim.updateAnimation(delta * 1000);
 			}
 		}
+		*/
 		
-		/*
-		if ( meshAnim && walking ){
+		
+		if ( meshAnim){
+			meshAnim.position.x += 0.1;
 			// Alternate morph targets
 			time = new Date().getTime() % duration;
 			keyframe = Math.floor( time / interpolation ) + animOffset;
@@ -179,7 +216,7 @@ $(function () {
 			meshAnim.morphTargetInfluences[ lastKeyframe ] = 
 				1 - meshAnim.morphTargetInfluences[ keyframe ];
 		}
-		*/
+		
 		
 		requestAnimationFrame(render);
 		renderer.render(scene, camera);
