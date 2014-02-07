@@ -1,4 +1,9 @@
-// once everything is loaded, we run our Three.js stuff.
+var grassColor = 0x77DD77;
+var dirtColor = 0xA87B5A;
+var rockColor = 0xC6CBC7;
+var waterColor = 0x7777DD;
+
+var test = false;
 var meshAnim;
 var animLabels;
 // Walking: 1-41
@@ -71,10 +76,12 @@ $(function () {
 	ambientLight = new THREE.AmbientLight(0x505050);
 	scene.add(ambientLight);
 	*/
+	/*
 	var ambiColor = "#0c0c0c";
 	var ambientLight = new THREE.AmbientLight(ambiColor);
-	scene.add(ambientLight);
-
+	scene.add(ambientLight);*/
+	ambiLight = new THREE.AmbientLight(0x505050);
+	scene.add(ambiLight);
 	light = new THREE.SpotLight(0xaaaaaa);
 	light.position.set(120, 100, 120);
 
@@ -87,20 +94,26 @@ $(function () {
 	renderer.shadowMapSoft = true;
 	scene.add(light);
 	
-	
+	//TODO testa skapa mina egna kuber, kolla om det funkar bättre med skuggorna
 	// MAP
-	var grass = new THREE.MeshLambertMaterial( {color: 0x77DD77 } );
-	var dirt = new THREE.MeshLambertMaterial( {color: 0xA87B5A } );
-	var rock = new THREE.MeshLambertMaterial( {color: 0xC6CBC7 } );
-	var water = new THREE.MeshLambertMaterial( {color: 0x7777DD } );
+	var grass = new THREE.MeshLambertMaterial( {color: grassColor} );
+	grass.ambient.set(grassColor);
+	
+	var dirt = new THREE.MeshLambertMaterial( {color: dirtColor } );
+	dirt.ambient.set(dirtColor);
+	var rock = new THREE.MeshLambertMaterial( {color: rockColor } );
+	rock.ambient.set(rockColor);
+	var water = new THREE.MeshLambertMaterial( {color: waterColor } );
+	water.ambient.set(waterColor);
 	var geom = new THREE.CubeGeometry(1,1,1);
-
+	
+	
 	var mapRandom = generateHeight( 100, 100 );
 	map = new THREE.Object3D();
 	var count = 0;
 	for (var i = 0; i < 100; i++){
 		for (var j = 0; j < 100; j++){
-			var height = (mapRandom[count]/10);
+			var height = Math.round((mapRandom[count]/10));
 			if (height < 1){
 				var cube = new THREE.Mesh(geom,water);
 			}
@@ -125,53 +138,52 @@ $(function () {
 		}
 	}
 	scene.add(map);
+	
 
 	var clock = new THREE.Clock();
-
+	
 	var loader = new THREE.JSONLoader();
 	loader.load('/models/villager.js', function (geometry, mat) {
-
+		var testMat = new THREE.MeshFaceMaterial(mat);
+		for (i = 0; i < testMat.materials.length; i++){
+			testMat.materials[i].morphTargets = true;
+			testMat.materials[i].vertexColors = THREE.FaceColors;
+		
+		}
+		console.log(testMat.materials[0].ambient);
 		var mat = new THREE.MeshLambertMaterial(
 				{color: 0xffffff, morphNormals: false,
 					morphTargets: true,
 					vertexColors: THREE.FaceColors});
-
+					
 		geometry.computeVertexNormals();
 		geometry.computeFaceNormals();
 		geometry.computeMorphNormals();
 
-		console.log(geometry);
-
-		meshAnim = new THREE.MorphAnimMesh(geometry, mat);
-		meshAnim.position.x = 0;
-		meshAnim.position.z = 0;
+		meshAnim = new THREE.MorphAnimMesh(geometry, testMat);
+		meshAnim.position.x = 5;
+		meshAnim.position.z = 5;
 
 		scene.add(meshAnim);
 
 	}, '../assets/models');
-
-		
-	function morphColorsToFaceColors(geometry) {
-
-		if (geometry.morphColors && geometry.morphColors.length) {
-
-			var colorMap = geometry.morphColors[ 0 ];
-			for (var i = 0; i < colorMap.colors.length; i++) {
-				geometry.faces[ i ].color = colorMap.colors[ i ];
-				geometry.faces[ i ].color.offsetHSL(0, 0.3, 0);
-			}
-		}
-	}
-		
-
-
+	
+	// meshAnim.material.materials[0].color.setRGB(0.5,0,1) ändrar tröjfärg
 	render();
+	update();
+	
+	function update(){
+		if (test){
+			meshAnim.position.x += 0.1;
+		}
+		setTimeout(update, 1000 / 60 );
+	}
 
 	function render() {
 		stats.update();
-
+		
 		if ( meshAnim && walking){
-			meshAnim.position.x += 0.1;
+			
 			// Alternate morph targets
 			time = new Date().getTime() % duration;
 			keyframe = Math.floor( time / interpolation ) + startFrame;
